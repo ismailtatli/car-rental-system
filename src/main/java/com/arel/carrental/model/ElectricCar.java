@@ -1,6 +1,10 @@
 package com.arel.carrental.model;
 
+/**
+ * Represents an electric car with a battery-based rental calculation.
+ */
 public class ElectricCar extends Car {
+
 
     private final double discountRate;
 

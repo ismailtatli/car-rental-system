@@ -2,7 +2,11 @@ package com.arel.carrental.model;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a payment made for a rental transaction.
+ */
 public class Payment {
+
     public enum Method { CASH, CARD }
 
     private final String paymentId;

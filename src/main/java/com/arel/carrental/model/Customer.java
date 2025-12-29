@@ -1,6 +1,9 @@
 package com.arel.carrental.model;
-
+/**
+ * Represents a customer who can rent cars from the system.
+ */
 public class Customer {
+
     private final String id;
     private final String fullName;
 

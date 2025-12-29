@@ -2,7 +2,11 @@ package com.arel.carrental.model;
 
 import java.time.LocalDate;
 
+/**
+ * Represents a car rental transaction between a customer and the system.
+ */
 public class Rental {
+
     private final String rentalId;
     private final String carId;
     private final String customerId;

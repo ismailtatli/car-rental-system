@@ -4,7 +4,11 @@ import com.arel.carrental.model.Car;
 
 import java.util.*;
 
+/**
+ * Manages the collection of cars available in the system.
+ */
 public class CarInventory {
+
 
     private final Map<String, Car> cars = new HashMap<>();
 

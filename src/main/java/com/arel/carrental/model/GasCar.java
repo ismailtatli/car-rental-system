@@ -1,6 +1,10 @@
 package com.arel.carrental.model;
 
+/**
+ * Represents a gasoline car with an additional daily service cost.
+ */
 public class GasCar extends Car {
+
 
     private final double serviceFeePerDay;
 

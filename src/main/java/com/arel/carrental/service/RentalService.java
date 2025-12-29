@@ -7,9 +7,10 @@ import java.time.LocalDate;
 import java.util.*;
 
 /**
- * Manages rent/return workflow and stores Rental/Payment records for demo.
+ * Provides core rental operations such as renting and returning cars.
  */
 public class RentalService {
+
 
     private final CarInventory inventory;
 

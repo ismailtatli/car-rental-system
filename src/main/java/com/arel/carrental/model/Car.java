@@ -1,6 +1,10 @@
 package com.arel.carrental.model;
 
+/**
+ * Abstract base class representing a rentable car in the system.
+ */
 public abstract class Car implements Rentable {
+
 
     private final String id;
     private final String brand;
