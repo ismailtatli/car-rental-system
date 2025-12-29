@@ -85,6 +85,35 @@ class RentalServiceTest {
         Payment payment = service.getPaymentForRental(rental.getRentalId());
         assertNotNull(payment);
     }
+    @Test
+    void getPaymentForRental_whenNotFound_shouldThrowOrReturnNull() {
+        CarInventory inv = new CarInventory();
+        RentalService service = new RentalService(inv);
+
+        try {
+            Payment p = service.getPaymentForRental("NO_RENTAL");
+            assertNull(p);
+        } catch (RuntimeException e) {
+            assertTrue(true);
+        }
+
+    }
+    @Test
+    void rentCar_shouldCreatePositivePaymentAmount() {
+        CarInventory inv = new CarInventory();
+        RentalService service = new RentalService(inv);
+
+        inv.addCar(new GasCar("G3", "BMW", "520d", 1000, 60));
+        service.registerCustomer(new Customer("C1", "Test User"));
+
+        Rental rental = service.rentCar("C1", "G3", 2, Payment.Method.CARD);
+        Payment payment = service.getPaymentForRental(rental.getRentalId());
+
+        assertNotNull(payment);
+        assertTrue(payment.getAmount() > 0);
+    }
+
+
 
 
 }
