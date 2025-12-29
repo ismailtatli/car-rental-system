@@ -64,5 +64,28 @@ class RentalServiceTest {
                 .orElseThrow()
                 .isReturned());
     }
+    @Test
+    void returnCar_whenRentalIdNotFound_shouldThrow() {
+        CarInventory inv = new CarInventory();
+        RentalService service = new RentalService(inv);
+
+        assertThrows(RuntimeException.class,
+                () -> service.returnCar("NO_RENTAL"));
+    }
+    @Test
+    void payment_shouldExistForCreatedRental() {
+        CarInventory inv = new CarInventory();
+        RentalService service = new RentalService(inv);
+
+        inv.addCar(new ElectricCar("E3", "Tesla", "Model S", 1200, 0.15));
+        service.registerCustomer(new Customer("C1", "Test User"));
+
+        Rental rental = service.rentCar("C1", "E3", 2, Payment.Method.CARD);
+
+        Payment payment = service.getPaymentForRental(rental.getRentalId());
+        assertNotNull(payment);
+    }
+
+
 }
 
