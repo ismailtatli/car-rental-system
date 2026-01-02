@@ -5,7 +5,6 @@ package com.arel.carrental.model;
  */
 public abstract class Car implements Rentable {
 
-
     private final String id;
     private final String brand;
     private final String model;

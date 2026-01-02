@@ -5,7 +5,6 @@ package com.arel.carrental.model;
  */
 public class GasCar extends Car {
 
-
     private final double serviceFeePerDay;
 
     public GasCar(String id, String brand, String model, double dailyPrice, double serviceFeePerDay) {
