@@ -25,3 +25,7 @@ UML diagrams are located under the docs/uml directory.
 
 ## Author
 İsmail Tatlı
+
+## Links
+- Repository: https://github.com/ismailtatli/car-rental-system
+- Kanban: https://github.com/users/ismailtatli/projects/3
