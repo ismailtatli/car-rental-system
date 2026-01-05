@@ -1,47 +1,31 @@
-# OOP Final Project Report - Car Rental System
+# Car Rental System – Report Notes (Draft)
 
-## UML Diagrams
-- Class Diagram: docs/uml/class-diagram.drawio.pdf
-- Use Case Diagram: docs/uml/use-case-diagram.drawio.pdf
+## Overview
+This project is a console-based Car Rental System developed for the Object Oriented Programming course.
+The system allows listing available cars, renting a car, returning a car, and tracking payments.
 
-## Unit Tests (JUnit)
-- Tests are located under: src/test/java
-- Screenshot: docs/report/screenshots/junit-tests.png
+## OOP Design Summary
+- Inheritance: `Car` is an abstract class, extended by `ElectricCar` and `GasCar`.
+- Interface: `Rentable` defines rental-related behavior.
+- Encapsulation: model classes keep fields private and expose required getters/setters.
+- Polymorphism: rental fee calculation uses overridden implementations in subclasses.
 
-## Git & Github
-- Repository: https://github.com/ismailtatli/car-rental-system
-- Github Projects (Kanban): https://github.com/users/ismailtatli/projects/3
+## Main Classes (Short)
+- **Car (abstract)**: base class for all cars, includes common fields and `calculateRentalFee()`.
+- **ElectricCar / GasCar**: specialized car types with different fee logic.
+- **CarInventory**: holds cars and tracks availability.
+- **Customer**: stores customer info.
+- **Rental**: represents a rental transaction.
+- **Payment**: stores payment details.
+- **RentalService**: main business logic for rent/return and payment records.
+- **Main**: console menu to run the demo.
 
-## Object Oriented Design (OOP)
+## UML
+UML Class and Use Case diagrams are provided under `docs/uml/`.
 
-In this project, I designed the system using OOP principles such as encapsulation, inheritance, polymorphism, and abstraction.
-The core rental logic is managed by `RentalService`, while the domain model is represented with separate classes for cars, customers, rentals, and payments.
-I used an abstract `Car` class and concrete subclasses (`ElectricCar`, `GasCar`) to apply polymorphism for rental fee calculation.
+## Testing
+JUnit tests are implemented under `src/test/java` to validate rental workflow, return logic, and payment validation.
+A screenshot of test results will be included in the final report document.
 
-## Class Responsibilities (Main Classes)
-
-### Car (abstract)
-Represents a rentable car with common fields such as id, brand, model and daily price.
-It defines a `calculateRentalFee()` method (polymorphic) which is implemented differently by subclasses.
-
-### ElectricCar
-A concrete car type that extends `Car`.
-It calculates rental fee based on the electric car pricing logic (e.g., base daily price and relevant extra rules).
-
-### GasCar
-A concrete car type that extends `Car`.
-It calculates rental fee using gas car pricing logic (e.g., base daily price + service fee per day).
-
-### RentalService
-This is the main service layer of the application.
-It controls the workflow: list available cars, register customers, rent a car, return a car, and create payment records.
-It also validates cases such as renting non-existing cars or returning already returned rentals.
-
-## Supporting Classes (Model / Helper)
-
-- `Customer`: Stores customer identity and basic info.
-- `Rental`: Holds rental details such as rented car, customer, dates/days, and status.
-- `Payment`: Stores payment method and payment amount for a rental.
-- `CarInventory`: Manages the list of cars and availability status.
-- `Rentable` (interface): Defines the contract for rentable items (implemented by `Car`).
-- `Main`: Console UI entry point that shows menu and runs demo flow.
+## Git & Kanban
+This project was developed with meaningful commits and tracked using GitHub Projects (Kanban board).
