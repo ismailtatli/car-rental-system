@@ -29,3 +29,9 @@ A screenshot of test results will be included in the final report document.
 
 ## Git & Kanban
 This project was developed with meaningful commits and tracked using GitHub Projects (Kanban board).
+
+
+
+
+## Final Notes
+- Final checks completed (UML PDFs, JUnit tests screenshot, Git log screenshot).
