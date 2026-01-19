@@ -1,0 +1,7 @@
+id,type,brand,model,dailyPrice,extra
+E1,ELECTRIC,Tesla,Model 3,1000,0.10
+G1,GAS,BMW,320i,800,50
+G2,GAS,Toyota,Corolla,700,40
+E2,ELECTRIC,BYD,Atto 3,900,0.08
+G3,GAS,Honda,Civic,850,45
+E3,ELECTRIC,Mercedes,EQA,1400,0.12
