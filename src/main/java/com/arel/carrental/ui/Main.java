@@ -9,39 +9,76 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class Main {
+
+    private static String readNonEmpty(Scanner sc, String prompt) {
+        System.out.print(prompt);
+        String s = sc.nextLine().trim();
+        if (s.isEmpty()) throw new IllegalArgumentException("Input cannot be empty.");
+        return s;
+    }
+
+    private static String readValidFullName(Scanner sc) {
+        String name = readNonEmpty(sc, "Full name: ");
+        if (!name.matches("[a-zA-ZçÇğĞıİöÖşŞüÜ ]+")) {
+            throw new IllegalArgumentException("Invalid name.");
+        }
+        return name;
+    }
+
+    private static int readPositiveInt(Scanner sc, String prompt) {
+        System.out.print(prompt);
+        int v;
+        try {
+            v = Integer.parseInt(sc.nextLine().trim());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid number.");
+        }
+        if (v <= 0) throw new IllegalArgumentException("Invalid number.");
+        return v;
+    }
+
+    private static Payment.Method readPaymentMethod(Scanner sc) {
+        String s = readNonEmpty(sc, "Payment method (CASH/CARD): ").toUpperCase();
+        if (!s.equals("CASH") && !s.equals("CARD")) {
+            throw new IllegalArgumentException("Invalid payment method.");
+        }
+        return Payment.Method.valueOf(s);
+    }
+
+    private static String readValidCarId(Scanner sc, CarInventory inventory) {
+        String carId = readNonEmpty(sc, "Car ID: ");
+        boolean ok = inventory.listAvailableCars().stream()
+                .anyMatch(c -> c.getId().equalsIgnoreCase(carId));
+        if (!ok) throw new IllegalArgumentException("Car not found or not available.");
+        return carId;
+    }
+
     public static void main(String[] args) {
 
         CarInventory inventory = new CarInventory();
         RentalService service = new RentalService(inventory);
 
-        // CSV load
         try {
             CsvCarLoader loader = new CsvCarLoader();
             List<Car> cars = loader.loadCars(Paths.get("data", "cars.csv"));
-            for (Car car : cars) inventory.addCar(car);
-            System.out.println("Cars loaded: " + cars.size());
+            for (Car c : cars) inventory.addCar(c);
         } catch (Exception e) {
-            System.out.println("CSV load error: " + e.getMessage());
+            System.out.println("CSV error.");
         }
 
         Scanner sc = new Scanner(System.in);
 
-        // Name -> CustomerId mapping (ID otomatik)
         Map<String, String> nameToCustomerId = new HashMap<>();
         int customerCounter = 1;
 
-        // Main tarafında kiralama kayıtları (4'te kesin görünsün diye)
         List<Rental> localRentals = new ArrayList<>();
-
         String lastRentalId = null;
-        String lastCustomerName = null;
 
         while (true) {
-            System.out.println("\n=== Car Rental System ===");
-            System.out.println("1) List available cars");
+            System.out.println("\n1) List available cars");
             System.out.println("2) Rent car");
             System.out.println("3) Return car");
-            System.out.println("4) List all rentals");
+            System.out.println("4) List rentals");
             System.out.println("0) Exit");
             System.out.print("Select: ");
 
@@ -49,97 +86,74 @@ public class Main {
 
             try {
                 switch (choice) {
+
                     case "1": {
-                        List<Car> availableCars = inventory.listAvailableCars();
-                        if (availableCars.isEmpty()) {
+                        List<Car> list = inventory.listAvailableCars();
+                        if (list.isEmpty()) {
                             System.out.println("No available cars.");
                         } else {
-                            for (Car c : availableCars) System.out.println(c);
+                            for (Car c : list) System.out.println(c);
                         }
                         break;
                     }
 
                     case "2": {
-                        System.out.print("Full name (e.g., Ismail Tatli): ");
-                        String fullName = sc.nextLine().trim();
-                        if (fullName.isEmpty()) throw new IllegalArgumentException("Name cannot be empty.");
+                        String fullName = readValidFullName(sc);
+                        String key = fullName.toLowerCase();
 
-                        // customerId otomatik üret / varsa kullan
-                        String customerId = nameToCustomerId.get(fullName.toLowerCase());
+                        String customerId = nameToCustomerId.get(key);
                         if (customerId == null) {
                             customerId = String.format("C%03d", customerCounter++);
-                            nameToCustomerId.put(fullName.toLowerCase(), customerId);
+                            nameToCustomerId.put(key, customerId);
                             service.registerCustomer(new Customer(customerId, fullName));
                         }
 
-                        System.out.print("Car ID (e.g., E1): ");
-                        String carId = sc.nextLine().trim();
-
-                        System.out.print("Days: ");
-                        int days = Integer.parseInt(sc.nextLine().trim());
-
-                        System.out.print("Payment method (CASH/CARD): ");
-                        Payment.Method method = Payment.Method.valueOf(sc.nextLine().trim().toUpperCase());
+                        String carId = readValidCarId(sc, inventory);
+                        int days = readPositiveInt(sc, "Days: ");
+                        Payment.Method method = readPaymentMethod(sc);
 
                         Rental rental = service.rentCar(customerId, carId, days, method);
                         lastRentalId = rental.getRentalId();
-                        lastCustomerName = fullName;
-
-                        // local listeye de ekle (4'te garanti görünsün)
                         localRentals.add(rental);
 
-                        System.out.println(fullName + " arabayi basariyla kiraladiniz ✅");
-                        System.out.println("RentalId=" + rental.getRentalId() + ", Total=" + rental.getTotalFee());
-
-                        Payment payment = service.getPaymentForRental(rental.getRentalId());
-                        if (payment != null) {
-                            System.out.println("Payment ✅ Method=" + payment.getMethod() + ", PaidAt=" + payment.getPaidAt());
-                        }
+                        System.out.println("Rented. RentalId=" + rental.getRentalId());
                         break;
                     }
 
                     case "3": {
                         System.out.print("Rental ID (ENTER = last): ");
-                        String rentalId = sc.nextLine().trim();
-                        if (rentalId.isEmpty()) rentalId = lastRentalId;
-
-                        service.returnCar(rentalId);
-
-                        // local listede de returned flag güncelle (Rental modelinde setter yoksa bu kısım sorun olmaz diye yorumlamadım)
-                        System.out.println("RETURNED ✅ RentalId=" + rentalId);
+                        String id = sc.nextLine().trim();
+                        if (id.isEmpty()) {
+                            if (lastRentalId == null) throw new IllegalStateException("No rental.");
+                            id = lastRentalId;
+                        }
+                        service.returnCar(id);
+                        System.out.println("Returned.");
                         break;
                     }
 
                     case "4": {
-                        // önce service’den dene
-                        List<Rental> rentalsFromService = service.listAllRentals();
+                        List<Rental> list = service.listAllRentals();
+                        if (list == null || list.isEmpty()) list = localRentals;
 
-                        List<Rental> toShow = rentalsFromService;
-                        if (toShow == null || toShow.isEmpty()) {
-                            toShow = localRentals; // garanti
-                        }
-
-                        if (toShow.isEmpty()) {
-                            System.out.println("No rentals yet.");
+                        if (list.isEmpty()) {
+                            System.out.println("No rentals.");
                         } else {
-                            for (Rental r : toShow) {
-                                System.out.println("Rental{" + r.getRentalId() +
-                                        ", car=" + r.getCarId() +
-                                        ", customer=" + r.getCustomerId() +
-                                        ", returned=" + r.isReturned() + "}");
+                            for (Rental r : list) {
+                                System.out.println(r.getRentalId() + " " +
+                                        r.getCarId() + " " +
+                                        r.getCustomerId() + " " +
+                                        r.isReturned());
                             }
                         }
                         break;
                     }
 
-                    case "0": {
-                        System.out.println("Bye.");
+                    case "0":
                         return;
-                    }
 
                     default:
-                        System.out.println("Invalid choice.");
-                        break;
+                        System.out.println("Invalid option.");
                 }
             } catch (Exception e) {
                 System.out.println("ERROR: " + e.getMessage());
